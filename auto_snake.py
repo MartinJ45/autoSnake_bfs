@@ -1,8 +1,12 @@
+# Date: 03/03/2023 (last updated)
+# Name: Martin Jimenez
+
 from cmu_graphics import *
 from random import *
 from collections import deque
 
-app.stepsPerSecond = 5
+app.stepsPerSecond = 10
+isPaused = False
 
 grid = [
     [1] * 20,
@@ -33,14 +37,14 @@ for y in range(20):
 
 snakeHead = Rect(40, 20, 20, 20, fill='blue', border='black', borderWidth=1)
 snakeBody = [Rect(20, 20, 20, 20, fill='green', border='black', borderWidth=1)]
-#snakeHead = Rect(20, 200, 20, 20, fill='blue', border='black', borderWidth=1)
-#snakeBody = [Rect(20, 120, 20, 20), Rect(20, 140, 20, 20), Rect(20, 160, 20, 20), Rect(20, 180, 20, 20)]
+#snakeHead =
+#snakeBody =
 
 border = Polygon(0, 0, 400, 0, 400, 400, 0, 400, 0, 20, 20, 20, 20, 380, 380, 380, 380, 20, 0, 20)
 score = Label(1, 50, 10, fill='white')
 path = []
 
-appleSeed = [(200, 20), (180, 220), (280, 140), (140, 160), (40, 320), (320, 280), (80, 120), (100, 180), (260, 340), (160, 100), (300, 260), (240, 340), (120, 120), (160, 140), (160, 140), (20, 240), (340, 200), (240, 340), (260, 200), (40, 340), (60, 40), (40, 240), (200, 80), (100, 300), (100, 320), (280, 320), (80, 60), (300, 180), (300, 260), (60, 340), (40, 320), (80, 100), (80, 280), (20, 20), (120, 160), (160, 140), (220, 140), (300, 300), (180, 160), (220, 260), (260, 200), (260, 200), (40, 80), (340, 100), (340, 100), (280, 120), (140, 280), (180, 340), (40, 280), (80, 100), (200, 320), (240, 60), (300, 200), (180, 240), (220, 320), (80, 60), (20, 300), (240, 340), (240, 300), (140, 120), (200, 160), (340, 20), (80, 280), (100, 120), (100, 120), (120, 100), (200, 100), (300, 180), (220, 80), (220, 80), (60, 100), (60, 100), (40, 240), (200, 160), (180, 340), (340, 220), (140, 260), (140, 260), (280, 120), (160, 60), (200, 340), (160, 220), (120, 40), (60, 60), (180, 80), (100, 180), (260, 300), (200, 40), (280, 340), (320, 140), (100, 60), (280, 220), (200, 280), (60, 60), (100, 260), (280, 240), (280, 240), (20, 60), (160, 60), (160, 80), (260, 260), (260, 260), (160, 120), (180, 280), (80, 180), (280, 220), (280, 220), (280, 220), (40, 320), (20, 20), (20, 20), (20, 20), (280, 100), (300, 140), (240, 200), (120, 180), (280, 300), (220, 40), (20, 260), (40, 280), (40, 20), (140, 100), (20, 120), (320, 180), (320, 180), (300, 340), (280, 60), (120, 20), (40, 80), (120, 300)]
+appleSeed = []
 apple = Rect(200, 20, 20, 20, fill='red', border='black', borderWidth=1)
 if appleSeed:
     apple.left = appleSeed[len(snakeBody) - 1][0]
@@ -50,6 +54,14 @@ if appleSeed:
 newAppleSeed = [(apple.left, apple.top)]
 
 snakeHead.direction = 'right'
+
+
+def gameOver():
+    Label('GAME OVER', 200, 200, size=50, fill='red')
+    print('Apple seed:', newAppleSeed)
+    print('Snake head:', snakeHead)
+    print('Snake body:', snakeBody)
+    app.stop()
 
 
 def dfs(grid, start, goal):
@@ -160,21 +172,21 @@ def snakePath(path, goal):
 
             for g in grid:
                 print(g)
-            print('\n')
 
     return path
 
 
-def genApple(apple):
+def genApple(apple, grid):
     global appleSeed
+    global isPaused
 
     if appleSeed:
         try:
-            apple.left = appleSeed[len(snakeBody)][0]
-            apple.top = appleSeed[len(snakeBody)][1]
+            apple.left = appleSeed[len(snakeBody) - 1][0]
+            apple.top = appleSeed[len(snakeBody) - 1][1]
         except:
             appleSeed = []
-            genApple(apple)
+            genApple(apple, grid)
     else:
         apple.left = randrange(0, 17) * 20 + 20
         apple.top = randrange(0, 17) * 20 + 20
@@ -182,52 +194,66 @@ def genApple(apple):
     if snakeHead.hits(apple.centerX, apple.centerY):
         print('Apple spawned on head', score.value)
         if appleSeed:
-            appleSeed.pop(len(snakeBody))
-        genApple(apple)
+            appleSeed.pop(len(snakeBody) - 1)
+        genApple(apple, grid)
 
     for body in snakeBody:
         if body.hits(apple.centerX, apple.centerY):
             print('Apple spawned on body', score.value)
             if appleSeed:
-                appleSeed.pop(len(snakeBody))
-            genApple(apple)
+                appleSeed.pop(len(snakeBody) - 1)
+            genApple(apple, grid)
 
     newApple = (apple.left, apple.top)
     newAppleSeed.append(newApple)
 
 
 def onKeyPress(key):
+    global isPaused
+
+    if key == 'left':
+        if app.stepsPerSecond == 1:
+            print('Cannot lower speed past', app.stepsPerSecond)
+        else:
+            app.stepsPerSecond -= 1
+            print('Lowered speed', app.stepsPerSecond)
+
+    if key == 'right':
+        app.stepsPerSecond += 1
+        print('Increased speed', app.stepsPerSecond)
+
     if key == 'space':
+        if isPaused:
+            isPaused = False
+        else:
+            isPaused = True
+            print('Paused the game')
+
+    if key == 'G':
+        print('Current grid:')
         for g in grid:
             print(g)
+
     if key == 'E':
-        Label('GAME OVER', 200, 200, size=50, fill='red')
         print('Terminated game early')
-        print('Apple seed:', newAppleSeed)
-        print('Snake head:', snakeHead)
-        print('Snake body:', snakeBody)
-        app.stop()
+        gameOver()
 
 
 def onStep():
     global path
     global snakeBody
+    global isPaused
+
+    if isPaused:
+        return
 
     if border.hits(snakeHead.centerX, snakeHead.centerY):
-        Label('GAME OVER', 200, 200, size=50, fill='red')
-        print('Apple seed:', newAppleSeed)
-        print('Snake head:', snakeHead)
-        print('Snake body:', snakeBody)
-        app.stop()
+        gameOver()
+        return
     for body in snakeBody:
         if body.hits(snakeHead.centerX, snakeHead.centerY):
-            for body in snakeBody:
-                body.fill = rgb(snakeBody.index(body), 255, snakeBody.index(body))
-            Label('GAME OVER', 200, 200, size=50, fill='red')
-            print('Apple seed:', newAppleSeed)
-            print('Snake head:', snakeHead)
-            print('Snake body:', snakeBody)
-            app.stop()
+            gameOver()
+            return
 
     snakeBody.append(Rect(snakeHead.left, snakeHead.top, 20, 20, fill='green', border='black', borderWidth=1))
     snakeBody[0].visible = False
@@ -270,7 +296,6 @@ def onStep():
     if apple.hits(snakeHead.centerX, snakeHead.centerY):
         snakeBody.append(Rect(snakeBody[-1].left, snakeBody[-1].top, 20, 20, fill='green', border='black', borderWidth=1))
         score.value = len(snakeBody)
-        genApple(apple)
-
+        genApple(apple, grid)
 
 cmu_graphics.run()
