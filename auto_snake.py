@@ -35,20 +35,27 @@ for x in range(20):
 for y in range(20):
     Line(0, 20 * y, 400, 20 * y, lineWidth=1)
 
-snakeHead = Rect(40, 20, 20, 20, fill='blue', border='black', borderWidth=1)
-snakeBody = [Rect(20, 20, 20, 20, fill='green', border='black', borderWidth=1)]
-#snakeHead =
-#snakeBody =
-
 border = Polygon(0, 0, 400, 0, 400, 400, 0, 400, 0, 20, 20, 20, 20, 380, 380, 380, 380, 20, 0, 20)
 score = Label(1, 50, 10, fill='white')
 path = []
 
-appleSeed = []
+#snakeHead = Rect(40, 20, 20, 20, fill='blue', border='black', borderWidth=1)
+#snakeBody = [Rect(20, 20, 20, 20, fill='green', border='black', borderWidth=1)]
+#appleSeed = []
+
+# improve on this appleSeed:
+appleSeed = [(200, 20), (340, 20), (280, 20), (340, 160), (180, 140), (120, 160), (300, 100), (180, 200), (40, 320), (320, 120), (280, 160), (160, 300), (300, 340), (300, 340), (60, 120), (40, 20), (260, 80), (60, 60), (100, 220), (140, 240), (100, 40), (60, 120), (260, 340), (180, 300), (60, 120), (20, 60), (200, 40), (200, 280), (340, 280), (100, 220), (100, 220), (160, 220), (40, 260), (180, 120), (160, 80), (160, 160), (320, 240), (80, 280), (80, 280), (260, 40), (240, 180), (240, 180), (240, 180), (280, 340), (280, 340), (280, 340), (180, 280), (80, 180), (100, 180), (300, 140), (140, 320), (140, 320), (200, 200), (160, 120), (320, 320), (260, 140), (160, 60), (300, 240), (300, 240), (120, 140)]
+snakeHead = Rect(200, 140, 20, 20, fill='blue', border='black', borderWidth=1)
+snakeBody = [Rect(20, 60, 20, 20), Rect(20, 40, 20, 20), Rect(40, 40, 20, 20), Rect(60, 40, 20, 20), Rect(80, 40, 20, 20), Rect(100, 40, 20, 20), Rect(120, 40, 20, 20), Rect(140, 40, 20, 20), Rect(160, 40, 20, 20), Rect(180, 40, 20, 20), Rect(200, 40, 20, 20), Rect(220, 40, 20, 20), Rect(240, 40, 20, 20), Rect(260, 40, 20, 20), Rect(280, 40, 20, 20), Rect(280, 20, 20, 20), Rect(300, 20, 20, 20), Rect(320, 20, 20, 20), Rect(320, 40, 20, 20), Rect(320, 60, 20, 20), Rect(320, 80, 20, 20), Rect(320, 100, 20, 20), Rect(320, 120, 20, 20), Rect(320, 140, 20, 20), Rect(320, 160, 20, 20), Rect(320, 180, 20, 20), Rect(320, 200, 20, 20), Rect(320, 220, 20, 20), Rect(320, 240, 20, 20), Rect(320, 260, 20, 20), Rect(320, 280, 20, 20), Rect(320, 300, 20, 20), Rect(320, 300, 20, 20), Rect(320, 320, 20, 20), Rect(300, 320, 20, 20), Rect(280, 320, 20, 20), Rect(260, 320, 20, 20), Rect(260, 300, 20, 20), Rect(260, 280, 20, 20), Rect(260, 260, 20, 20), Rect(260, 240, 20, 20), Rect(260, 220, 20, 20), Rect(260, 200, 20, 20), Rect(260, 180, 20, 20), Rect(260, 160, 20, 20), Rect(260, 160, 20, 20), Rect(260, 140, 20, 20), Rect(240, 140, 20, 20), Rect(220, 140, 20, 20)]
+for body in snakeBody:
+    body.fill = 'green'
+    body.border = 'black'
+    body.borderWidth = 1
+
 apple = Rect(200, 20, 20, 20, fill='red', border='black', borderWidth=1)
 if appleSeed:
-    apple.left = appleSeed[len(snakeBody) - 1][0]
-    apple.top = appleSeed[len(snakeBody) - 1][1]
+    apple.left = appleSeed[len(snakeBody)][0]
+    apple.top = appleSeed[len(snakeBody)][1]
     score.value = len(snakeBody)
 
 newAppleSeed = [(apple.left, apple.top)]
@@ -178,7 +185,6 @@ def snakePath(path, goal):
 
 def genApple(apple, grid):
     global appleSeed
-    global isPaused
 
     if appleSeed:
         try:
