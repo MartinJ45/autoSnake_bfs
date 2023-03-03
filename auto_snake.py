@@ -4,8 +4,6 @@ from collections import deque
 
 app.stepsPerSecond = 5
 
-#test comment
-
 grid = [
     [1] * 20,
     [1] + [0] * 18 + [1],
