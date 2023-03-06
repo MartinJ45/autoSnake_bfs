@@ -229,6 +229,7 @@ def futurePath(path):
         # Uncomment to see the new grid
         for g in newGrid:
             print(g)
+        print('\n')
 
         # Finds a path from the apple to the end of the tail
         # If no path is found, the snake will get stuck if it follows the apple
