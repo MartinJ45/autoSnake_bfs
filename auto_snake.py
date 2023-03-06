@@ -9,6 +9,7 @@ from collections import deque
 # The default game speed is 10; this value can be changed by pressing the left and right arrow keys
 app.stepsPerSecond = 10
 isPaused = False
+isPlaying = False
 
 # This is the grid that the snake uses
 # 0 represents open space
@@ -52,7 +53,7 @@ score = Label(1, 50, 10, fill='white')
 path = []
 
 # This is the default start
-# Replace this section of code with what is printed when pressing SHIFT + 'P' to resume/replicate a game
+# Replace this section of code with what is printed when pressing SHIFT + 'I' to resume/replicate a game
 appleSeed = [(200, 20)]
 snakeHead = Rect(40, 20, 20, 20, fill='blue', border='black', borderWidth=1)
 snakeBody = [Rect(20, 20, 20, 20, fill='green', border='black', borderWidth=1)]
@@ -358,6 +359,31 @@ def genApple(apple, grid):
 
 def onKeyPress(key):
     global isPaused
+    global isPlaying
+
+    # Allows the player to play
+    if key == 'P':
+        if isPlaying:
+            isPlaying = False
+            print('Computer in control')
+        else:
+            isPlaying = True
+            print('Player in control')
+            print('Use WASD to move')
+
+        isPaused = True
+        print('Paused the game')
+
+    # Player controls if the player is playing
+    if isPlaying:
+        if key == 'w' and snakeHead.direction != 'down':
+            snakeHead.direction = 'up'
+        if key == 's' and snakeHead.direction != 'up':
+            snakeHead.direction = 'down'
+        if key == 'a' and snakeHead.direction != 'right':
+            snakeHead.direction = 'left'
+        if key == 'd' and snakeHead.direction != 'left':
+            snakeHead.direction = 'right'
 
     # Slows down the game
     if key == 'left':
@@ -381,7 +407,7 @@ def onKeyPress(key):
             print('Paused the game')
 
     # Prints information
-    if key == 'P':
+    if key == 'I':
         # Displays the current grid that the snake sees
         print('Current grid:')
         for g in grid:
@@ -411,6 +437,7 @@ def onKeyPress(key):
 def onStep():
     global path
     global isPaused
+    global isPlaying
 
     # Stops the game from continuing if it is paused
     if isPaused:
@@ -430,36 +457,38 @@ def onStep():
     snakeBody[0].visible = False
     snakeBody.pop(0)
 
-    # Updates the grid whenever the snake doesn't have a path to follow
-    # The game would run significantly slower if the grid were to be updated every single step
-    if not path:
-        for gridX in range(20):
-            if gridX != 0 and gridX != 19:              # Avoids updated the border
-                for gridY in range(20):
-                    if gridY != 0 and gridY != 19:      # Avoids updated the border
-                        if apple.hits(20 * gridX + 10, 20 * gridY + 10):
-                            grid[gridY][gridX] = 9
-                        elif border.hits(20 * gridX + 10, 20 * gridY + 10):
-                            grid[gridY][gridX] = 1
-                        else:
-                            grid[gridY][gridX] = 0
-
-                        for body in snakeBody:
-                            if body.hits(20 * gridX + 10, 20 * gridY + 10):
+    # Stops path updating the grid and pathfinding if the player is in control
+    if not isPlaying:
+        # Updates the grid whenever the snake doesn't have a path to follow
+        # The game would run significantly slower if the grid were to be updated every single step
+        if not path:
+            for gridX in range(20):
+                if gridX != 0 and gridX != 19:              # Avoids updated the border
+                    for gridY in range(20):
+                        if gridY != 0 and gridY != 19:      # Avoids updated the border
+                            if apple.hits(20 * gridX + 10, 20 * gridY + 10):
+                                grid[gridY][gridX] = 9
+                            elif border.hits(20 * gridX + 10, 20 * gridY + 10):
                                 grid[gridY][gridX] = 1
-                                break
+                            else:
+                                grid[gridY][gridX] = 0
 
-                        if snakeHead.hits(20 * gridX + 10, 20 * gridY + 10):
-                            grid[gridY][gridX] = 3
+                            for body in snakeBody:
+                                if body.hits(20 * gridX + 10, 20 * gridY + 10):
+                                    grid[gridY][gridX] = 1
+                                    break
 
-    # Determines the snake's next path to follow
-    path = findApplePath(path, 9)
-    try:
-        snakeHead.direction = path[0]
-        # Moves onto the next direction
-        path.pop(0)
-    except:
-        pass
+                            if snakeHead.hits(20 * gridX + 10, 20 * gridY + 10):
+                                grid[gridY][gridX] = 3
+
+        # Determines the snake's next path to follow
+        path = findApplePath(path, 9)
+        try:
+            snakeHead.direction = path[0]
+            # Moves onto the next direction
+            path.pop(0)
+        except:
+            pass
 
     # Moves the snake head
     if snakeHead.direction == 'right':
