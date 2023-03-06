@@ -6,7 +6,8 @@ from cmu_graphics import *
 from random import *
 from collections import deque
 
-# The default game speed is 10; this value can be changed by pressing the left and right arrow keys
+# The default game speed is 10; this value can be changed by pressing the
+# left and right arrow keys
 app.stepsPerSecond = 10
 isPaused = False
 isPlaying = False
@@ -47,13 +48,34 @@ for y in range(20):
     Line(0, 20 * y, 400, 20 * y, lineWidth=1)
 
 # Draws the border and score
-border = Polygon(0, 0, 400, 0, 400, 400, 0, 400, 0, 20, 20, 20, 20, 380, 380, 380, 380, 20, 0, 20)
+border = Polygon(
+    0,
+    0,
+    400,
+    0,
+    400,
+    400,
+    0,
+    400,
+    0,
+    20,
+    20,
+    20,
+    20,
+    380,
+    380,
+    380,
+    380,
+    20,
+    0,
+    20)
 score = Label(1, 50, 10, fill='white')
 
 path = []
 
 # This is the default start
-# Replace this section of code with what is printed when pressing SHIFT + 'I' to resume/replicate a game
+# Replace this section of code with what is printed when pressing SHIFT +
+# 'I' to resume/replicate a game
 appleSeed = [(200, 20)]
 snakeHead = Rect(40, 20, 20, 20, fill='blue', border='black', borderWidth=1)
 snakeBody = [Rect(20, 20, 20, 20, fill='green', border='black', borderWidth=1)]
@@ -70,6 +92,7 @@ newAppleSeed = appleSeed.copy()
 
 # Determines which way the snake will go; starts off going right
 snakeHead.direction = 'right'
+snakeHead.prevDirection = 'right'
 
 
 # Stops the program when the snake loses, wins, or if the game is ended early
@@ -93,7 +116,9 @@ def gameOver():
                 end = ']'
             else:
                 end = ','
-            print(f'Rect({body.left}, {body.top}, 20, 20, fill=\'green\', border=\'black\', borderWidth=1)', end=end)
+            print(
+                f'Rect({body.left}, {body.top}, 20, 20, fill=\'green\', border=\'black\', borderWidth=1)',
+                end=end)
     app.stop()
 
 
@@ -112,26 +137,36 @@ def dfs(grid, start, goal):
 
             x, y = node[0], node[1]
 
-            if ((x > 0) and (x < rows - 1) and (y > 0) and (y < cols - 1) and (grid[x][y]) == goal):
+            if ((x > 0) and (x < rows - 1) and (y > 0)
+                    and (y < cols - 1) and (grid[x][y]) == goal):
                 return (x, y), parentMap
 
-            if (x > 0) and (grid[x - 1][y] not in (1, 2, 3)) and ((x - 1, y) not in visited):
+            if (x > 0) and (grid[x - 1][y] not in (1, 2, 3)
+                            ) and ((x - 1, y) not in visited):
                 stack.append((x - 1, y))
                 parentMap[(x - 1, y)] = ((x, y), 'up')
-            if (x < rows - 1) and (grid[x + 1][y] not in (1, 2, 3)) and ((x + 1, y) not in visited):
+            if (x < rows -
+                1) and (grid[x +
+                             1][y] not in (1, 2, 3)) and ((x +
+                                                           1, y) not in visited):
                 stack.append((x + 1, y))
                 parentMap[(x + 1, y)] = ((x, y), 'down')
-            if (y > 0) and (grid[x][y - 1] not in (1, 2, 3)) and ((x, y - 1) not in visited):
+            if (y > 0) and (grid[x][y - 1] not in (1, 2, 3)
+                            ) and ((x, y - 1) not in visited):
                 stack.append((x, y - 1))
                 parentMap[(x, y - 1)] = ((x, y), 'left')
-            if (y < cols - 1) and (grid[x][y + 1] not in (1, 2, 3)) and ((x, y + 1) not in visited):
+            if (y < cols -
+                1) and (grid[x][y +
+                                1] not in (1, 2, 3)) and ((x, y +
+                                                           1) not in visited):
                 stack.append((x, y + 1))
                 parentMap[(x, y + 1)] = ((x, y), 'right')
 
     return None, None
 
 
-# Uses breath first search to path find to the apple in the least amount of moves as possible
+# Uses breath first search to path find to the apple in the least amount
+# of moves as possible
 def bfs(grid, start, goal, order='lr'):
     visited = set()
     dq = deque([start])
@@ -145,35 +180,52 @@ def bfs(grid, start, goal, order='lr'):
 
             x, y = node[0], node[1]
 
-            if ((x > 0) and (x < rows - 1) and (y > 0) and (y < cols - 1) and (grid[x][y]) == goal):
+            if ((x > 0) and (x < rows - 1) and (y > 0)
+                    and (y < cols - 1) and (grid[x][y]) == goal):
                 return (x, y), parentMap
 
             # Favors going left to right than up and down
             if order == 'lr':
-                if (x > 0) and (grid[x - 1][y] not in (1, 2)) and ((x - 1, y) not in visited):
+                if (x > 0) and (grid[x - 1][y] not in (1, 2)
+                                ) and ((x - 1, y) not in visited):
                     dq.appendleft((x - 1, y))
                     parentMap[(x - 1, y)] = ((x, y), 'up')
-                if (x < rows - 1) and (grid[x + 1][y] not in (1, 2)) and ((x + 1, y) not in visited):
+                if (x < rows -
+                    1) and (grid[x +
+                                 1][y] not in (1, 2)) and ((x +
+                                                            1, y) not in visited):
                     dq.appendleft((x + 1, y))
                     parentMap[(x + 1, y)] = ((x, y), 'down')
-                if (y > 0) and (grid[x][y - 1] not in (1, 2)) and ((x, y - 1) not in visited):
+                if (y > 0) and (grid[x][y - 1] not in (1, 2)
+                                ) and ((x, y - 1) not in visited):
                     dq.appendleft((x, y - 1))
                     parentMap[(x, y - 1)] = ((x, y), 'left')
-                if (y < cols - 1) and (grid[x][y + 1] not in (1, 2)) and ((x, y + 1) not in visited):
+                if (y < cols -
+                    1) and (grid[x][y +
+                                    1] not in (1, 2)) and ((x, y +
+                                                            1) not in visited):
                     dq.appendleft((x, y + 1))
                     parentMap[(x, y + 1)] = ((x, y), 'right')
             # Favors going up and down than left to right
             elif order == 'ud':
-                if (y > 0) and (grid[x][y - 1] not in (1, 2)) and ((x, y - 1) not in visited):
+                if (y > 0) and (grid[x][y - 1] not in (1, 2)
+                                ) and ((x, y - 1) not in visited):
                     dq.appendleft((x, y - 1))
                     parentMap[(x, y - 1)] = ((x, y), 'left')
-                if (y < cols - 1) and (grid[x][y + 1] not in (1, 2)) and ((x, y + 1) not in visited):
+                if (y < cols -
+                    1) and (grid[x][y +
+                                    1] not in (1, 2)) and ((x, y +
+                                                            1) not in visited):
                     dq.appendleft((x, y + 1))
                     parentMap[(x, y + 1)] = ((x, y), 'right')
-                if (x > 0) and (grid[x - 1][y] not in (1, 2)) and ((x - 1, y) not in visited):
+                if (x > 0) and (grid[x - 1][y] not in (1, 2)
+                                ) and ((x - 1, y) not in visited):
                     dq.appendleft((x - 1, y))
                     parentMap[(x - 1, y)] = ((x, y), 'up')
-                if (x < rows - 1) and (grid[x + 1][y] not in (1, 2)) and ((x + 1, y) not in visited):
+                if (x < rows -
+                    1) and (grid[x +
+                                 1][y] not in (1, 2)) and ((x +
+                                                            1, y) not in visited):
                     dq.appendleft((x + 1, y))
                     parentMap[(x + 1, y)] = ((x, y), 'down')
 
@@ -201,7 +253,8 @@ def futurePath(path):
         changeX = int(snakeHead.left / 20)
         changeY = int(snakeHead.top / 20)
 
-        # Changes the path the snake will take into 2s on the grid (2 is treated as a body)
+        # Changes the path the snake will take into 2s on the grid (2 is
+        # treated as a body)
         for i in range(len(path)):
             p = path[i]
 
@@ -228,9 +281,9 @@ def futurePath(path):
                 break
 
         # Uncomment to see the new grid
-        #for g in newGrid:
+        # for g in newGrid:
         #    print(g)
-        #print('\n')
+        # print('\n')
 
         # Finds a path from the apple to the end of the tail
         # If no path is found, the snake will get stuck if it follows the apple
@@ -271,12 +324,12 @@ def findTailPath(path):
             # If a successful path is found
             if len(path) >= snakeBody.index(body) + 1:
                 # Uncomment to see which option is chosen
-                #print('Option', snakeBody.index(body), 'taken with', len(path), 'directions')
+                # print('Option', snakeBody.index(body), 'taken with', len(path), 'directions')
                 break
             # If the path found will end up losing the game
             else:
                 # Uncomment to see which option got rejected
-                #print('Rejected option', snakeBody.index(body), 'with', len(path), 'directions')
+                # print('Rejected option', snakeBody.index(body), 'with', len(path), 'directions')
                 if len(path) > len(highPath):
                     highPath = path
 
@@ -284,7 +337,7 @@ def findTailPath(path):
         if snakeBody.index(body) == len(snakeBody) - 1:
             path = highPath
             # Uncomment to see the longest path
-            #print('Best option chosen with', len(path), 'directions')
+            # print('Best option chosen with', len(path), 'directions')
             break
 
         # Resets the grid
@@ -298,7 +351,7 @@ def findApplePath(path, goal):
     if not path:
         start = int(snakeHead.top / 20), int(snakeHead.left / 20)
 
-        if apple.left/20 in (1, 18):
+        if apple.left / 20 in (1, 18):
             xy, parentMap = bfs(grid, start, goal, 'ud')
         else:
             xy, parentMap = bfs(grid, start, goal)
@@ -308,13 +361,16 @@ def findApplePath(path, goal):
             path = findPath(xy, start, parentMap)
             path.reverse()
 
-            # Determines if the snake will get stuck if it follows the planned path
+            # Determines if the snake will get stuck if it follows the planned
+            # path
             isStuck = futurePath(path)
 
-            # If the snake determines it will get stuck, the snake finds a path to its tail
+            # If the snake determines it will get stuck, the snake finds a path
+            # to its tail
             if isStuck:
                 path = findTailPath(path)
-        # If a path to the apple is not found, the snake finds a path to its tail
+        # If a path to the apple is not found, the snake finds a path to its
+        # tail
         else:
             path = findTailPath(path)
 
@@ -331,7 +387,7 @@ def genApple(apple, grid):
             apple.left = appleSeed[len(snakeBody) - 1][0]
             apple.top = appleSeed[len(snakeBody) - 1][1]
         # When it runs through the set seed, the apples go back to being random
-        except:
+        except BaseException:
             appleSeed = []
             genApple(apple, grid)
     else:
@@ -417,7 +473,8 @@ def onKeyPress(key):
         print('Copy and paste this code to save/replicate where the snake left off')
         print('appleSeed =', newAppleSeed)
         # Prints the snake's head
-        print(f'snakeHead = Rect({snakeHead.left}, {snakeHead.top}, 20, 20, fill=\'blue\', border=\'black\', borderWidth=1)')
+        print(
+            f'snakeHead = Rect({snakeHead.left}, {snakeHead.top}, 20, 20, fill=\'blue\', border=\'black\', borderWidth=1)')
         # Prints the snake's body
         print('snakeBody = [', end='')
         for body in snakeBody:
@@ -425,7 +482,9 @@ def onKeyPress(key):
                 end = ']'
             else:
                 end = ','
-            print(f'Rect({body.left}, {body.top}, 20, 20, fill=\'green\', border=\'black\', borderWidth=1)', end=end)
+            print(
+                f'Rect({body.left}, {body.top}, 20, 20, fill=\'green\', border=\'black\', borderWidth=1)',
+                end=end)
 
     # Ends the game
     if key == 'E':
@@ -433,7 +492,8 @@ def onKeyPress(key):
         gameOver()
 
 
-# This function runs X times every second; X = app.stepsPerSecond (the default is 10)
+# This function runs X times every second; X = app.stepsPerSecond (the
+# default is 10)
 def onStep():
     global path
     global isPaused
@@ -453,14 +513,23 @@ def onStep():
             return
 
     # Moves the snake body with the head
-    snakeBody.append(Rect(snakeHead.left, snakeHead.top, 20, 20, fill='green', border='black', borderWidth=1))
+    snakeBody.append(
+        Rect(
+            snakeHead.left,
+            snakeHead.top,
+            20,
+            20,
+            fill='green',
+            border='black',
+            borderWidth=1))
     snakeBody[0].visible = False
     snakeBody.pop(0)
 
     # Stops path updating the grid and pathfinding if the player is in control
     if not isPlaying:
         # Updates the grid whenever the snake doesn't have a path to follow
-        # The game would run significantly slower if the grid were to be updated every single step
+        # The game would run significantly slower if the grid were to be
+        # updated every single step
         if not path:
             for gridX in range(20):
                 if gridX != 0 and gridX != 19:              # Avoids updated the border
@@ -478,7 +547,8 @@ def onStep():
                                     grid[gridY][gridX] = 1
                                     break
 
-                            if snakeHead.hits(20 * gridX + 10, 20 * gridY + 10):
+                            if snakeHead.hits(
+                                    20 * gridX + 10, 20 * gridY + 10):
                                 grid[gridY][gridX] = 3
 
         # Determines the snake's next path to follow
@@ -487,22 +557,30 @@ def onStep():
             snakeHead.direction = path[0]
             # Moves onto the next direction
             path.pop(0)
-        except:
+        except BaseException:
             pass
 
     # Moves the snake head
-    if snakeHead.direction == 'right':
+    if snakeHead.direction == 'right' and snakeHead.prevDirection != 'left':
         snakeHead.centerX += 20
-    if snakeHead.direction == 'left':
+    if snakeHead.direction == 'left' and snakeHead.prevDirection != 'right':
         snakeHead.centerX -= 20
-    if snakeHead.direction == 'up':
+    if snakeHead.direction == 'up' and snakeHead.prevDirection != 'down':
         snakeHead.centerY -= 20
-    if snakeHead.direction == 'down':
+    if snakeHead.direction == 'down' and snakeHead.prevDirection != 'up':
         snakeHead.centerY += 20
+
+    snakeHead.prevDirection = snakeHead.direction
 
     if apple.hits(snakeHead.centerX, snakeHead.centerY):
         # Adds another snake body
-        snakeBody.append(Rect(snakeBody[-1].left, snakeBody[-1].top, 20, 20, fill='green', border='black', borderWidth=1))
+        snakeBody.append(Rect(snakeBody[-1].left,
+                              snakeBody[-1].top,
+                              20,
+                              20,
+                              fill='green',
+                              border='black',
+                              borderWidth=1))
         # Updates score, ends game if score is 324
         score.value = len(snakeBody)
         if score.value == 324:
