@@ -335,8 +335,8 @@ def genApple(apple, grid):
             genApple(apple, grid)
     else:
         # Randomizes apple spawn
-        apple.left = randrange(0, 17) * 20 + 20
-        apple.top = randrange(0, 17) * 20 + 20
+        apple.left = randrange(0, 18) * 20 + 20
+        apple.top = randrange(0, 18) * 20 + 20
 
     # Regenerates apple if it is generated inside the snake head
     if snakeHead.hits(apple.centerX, apple.centerY):
