@@ -1,4 +1,4 @@
-# Date: 03/06/2023 (last updated)
+# Date: 03/07/2023 (last updated)
 # Name: Martin Jimenez
 
 # This snake game uses the cmu_graphics library
