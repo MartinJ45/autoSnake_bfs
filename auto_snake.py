@@ -103,22 +103,22 @@ def gameOver():
     else:
         Label('GAME OVER', 200, 200, size=50, fill='red')
 
-        # Prints the seed of the game, so the game can be replicated
-        print('Copy and paste this code to save/replicate where the snake left off')
-        print('appleSeed =', newAppleSeed)
-        # Prints the snake's head
+    # Prints the seed of the game, so the game can be replicated
+    print('Copy and paste this code to save/replicate where the snake left off')
+    print('appleSeed =', newAppleSeed)
+    # Prints the snake's head
+    print(
+        f'snakeHead = Rect({snakeHead.left}, {snakeHead.top}, 20, 20, fill=\'blue\', border=\'black\', borderWidth=1)')
+    # Prints the snake's body
+    print('snakeBody = [', end='')
+    for body in snakeBody:
+        if snakeBody.index(body) == len(snakeBody) - 1:
+            end = ']'
+        else:
+            end = ','
         print(
-            f'snakeHead = Rect({snakeHead.left}, {snakeHead.top}, 20, 20, fill=\'blue\', border=\'black\', borderWidth=1)')
-        # Prints the snake's body
-        print('snakeBody = [', end='')
-        for body in snakeBody:
-            if snakeBody.index(body) == len(snakeBody) - 1:
-                end = ']'
-            else:
-                end = ','
-            print(
-                f'Rect({body.left}, {body.top}, 20, 20, fill=\'green\', border=\'black\', borderWidth=1)',
-                end=end)
+            f'Rect({body.left}, {body.top}, 20, 20, fill=\'green\', border=\'black\', borderWidth=1)',
+            end=end)
     app.stop()
 
 
@@ -590,4 +590,5 @@ def onStep():
         genApple(apple, grid)
 
 
-cmu_graphics.run()
+if __name__ == '__main__':
+    cmu_graphics.run()
