@@ -12,6 +12,27 @@ app.stepsPerSecond = 10
 isPaused = False
 isPlaying = False
 
+# Grabs size input
+msg = 'Enter the board length (default 18 or press ENTER)'
+size = app.getTextInput(msg)
+while not size.isdigit() or int(size) % 2 != 0 or int(size) > 200 or int(size) < 4:
+    if size == '':
+        size = 18
+        break
+    if not size.isdigit():
+        msg = 'Enter the board length (enter a digit)'
+    if int(size) % 2 != 0:
+        msg = 'Enter the board length (only evens)'
+    if int(size) > 200:
+        msg = 'Enter the board length (max size 200)'
+    if int(size) < 4:
+        msg = 'Enter the board length (min size 4)'
+
+    size = app.getTextInput(msg)
+
+size = int(size)
+blockSize = 400 / (size + 2)
+
 # This is the grid that the snake uses
 # 0 represents open space
 # 1 represents the border or the snake body
@@ -20,32 +41,19 @@ isPlaying = False
 # 5 is a goal representing the end of the tail (used when it cannot locate the apple)
 # 9 is a goal representing the apple
 grid = [
-    [1] * 20,
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] + [0] * 18 + [1],
-    [1] * 20]
+    [1] * (size + 2)
+]
 
-# Draws the grid
-for x in range(20):
-    Line(20 * x, 0, 20 * x, 400, lineWidth=1)
-for y in range(20):
-    Line(0, 20 * y, 400, 20 * y, lineWidth=1)
+for i in range(size):
+    grid.append([1] + [0] * size + [1])
+grid.append([1] * (size + 2))
+
+# Draws the background grid
+gridBackground = Group()
+for x in range(size + 2):
+    gridBackground.add(Line(blockSize * x, 0, blockSize * x, 400, lineWidth=1))
+for y in range(size + 2):
+    gridBackground.add(Line(0, blockSize * y, 400, blockSize * y, lineWidth=1))
 
 # Draws the border and score
 border = Polygon(
@@ -58,31 +66,53 @@ border = Polygon(
     0,
     400,
     0,
-    20,
-    20,
-    20,
-    20,
-    380,
-    380,
-    380,
-    380,
-    20,
+    blockSize,
+    blockSize,
+    blockSize,
+    blockSize,
+    400 - blockSize,
+    400 - blockSize,
+    400 - blockSize,
+    400 - blockSize,
+    blockSize,
     0,
-    20)
-score = Label(1, 50, 10, fill='white')
+    blockSize)
+score = Label(1, 50, blockSize / 2, fill='white', size=blockSize)
 
 path = []
 
 # This is the default start
 # Replace this section of code with what is printed when pressing SHIFT +
 # 'I' to resume/replicate a game
-appleSeed = [(200, 20)]
-snakeHead = Rect(40, 20, 20, 20, fill='blue', border='black', borderWidth=1)
-snakeBody = [Rect(20, 20, 20, 20, fill='green', border='black', borderWidth=1)]
+appleSeed = [(200, blockSize)]
+snakeHead = Rect(
+    blockSize * 2,
+    blockSize,
+    blockSize,
+    blockSize,
+    fill='blue',
+    border='black',
+    borderWidth=1)
+snakeBody = [
+    Rect(
+        blockSize,
+        blockSize,
+        blockSize,
+        blockSize,
+        fill='green',
+        border='black',
+        borderWidth=1)]
 #
 
 # Correctly draws the apple
-apple = Rect(200, 20, 20, 20, fill='red', border='black', borderWidth=1)
+apple = Rect(
+    200,
+    blockSize,
+    blockSize,
+    blockSize,
+    fill='red',
+    border='black',
+    borderWidth=1)
 apple.left = appleSeed[len(snakeBody) - 1][0]
 apple.top = appleSeed[len(snakeBody) - 1][1]
 
@@ -98,7 +128,7 @@ snakeHead.prevDirection = 'right'
 # Stops the program when the snake loses, wins, or if the game is ended early
 def gameOver():
     # The max value it can achieve is 324 in an 18 by 18 grid
-    if score.value == 324:
+    if score.value == pow(size, 2):
         Label('YOU WIN', 200, 200, size=50, fill='lime')
     else:
         Label('GAME OVER', 200, 200, size=50, fill='red')
@@ -108,7 +138,7 @@ def gameOver():
     print('appleSeed =', newAppleSeed)
     # Prints the snake's head
     print(
-        f'snakeHead = Rect({snakeHead.left}, {snakeHead.top}, 20, 20, fill=\'blue\', border=\'black\', borderWidth=1)')
+        f'snakeHead = Rect({snakeHead.left}, {snakeHead.top}, {blockSize}, {blockSize}, fill=\'blue\', border=\'black\', borderWidth=1)')
     # Prints the snake's body
     print('snakeBody = [', end='')
     for body in snakeBody:
@@ -117,7 +147,7 @@ def gameOver():
         else:
             end = ','
         print(
-            f'Rect({body.left}, {body.top}, 20, 20, fill=\'green\', border=\'black\', borderWidth=1)',
+            f'Rect({body.left}, {body.top}, {blockSize}, {blockSize}, fill=\'green\', border=\'black\', borderWidth=1)',
             end=end)
     app.stop()
 
@@ -250,8 +280,8 @@ def futurePath(path):
 
     if len(path) < len(snakeBody):
         # Starting position is the snake's head position
-        changeX = int(snakeHead.left / 20)
-        changeY = int(snakeHead.top / 20)
+        changeX = int(snakeHead.left / blockSize)
+        changeY = int(snakeHead.top / blockSize)
 
         # Changes the path the snake will take into 2s on the grid (2 is
         # treated as a body)
@@ -275,9 +305,11 @@ def futurePath(path):
         # Changes the end of the snake to empty spaces, so it is up to date
         for body in snakeBody:
             if snakeBody.index(body) < len(path) - 1:
-                newGrid[int(body.top / 20)][int(body.left / 20)] = 0
+                newGrid[int(body.top / blockSize)
+                        ][int(body.left / blockSize)] = 0
             else:
-                newGrid[int(body.top / 20)][int(body.left / 20)] = 5
+                newGrid[int(body.top / blockSize)
+                        ][int(body.left / blockSize)] = 5
                 break
 
         # Uncomment to see the new grid
@@ -288,7 +320,7 @@ def futurePath(path):
         # Finds a path from the apple to the end of the tail
         # If no path is found, the snake will get stuck if it follows the apple
         # If a path is found, the snake is safe to get the apple
-        fStart = int(apple.top / 20), int(apple.left / 20)
+        fStart = int(apple.top / blockSize), int(apple.left / blockSize)
         goal = 5
         xy, parentMap = dfs(newGrid, fStart, goal)
 
@@ -302,7 +334,7 @@ def futurePath(path):
 
 # Locates a path from the snake head to the furthest end of the snake tail
 def findTailPath(path):
-    start = int(snakeHead.top / 20), int(snakeHead.left / 20)
+    start = int(snakeHead.top / blockSize), int(snakeHead.left / blockSize)
 
     # Saves the longest path for a worst-case scenario
     highPath = []
@@ -310,7 +342,7 @@ def findTailPath(path):
     # Finds the furthest tail-piece
     for body in snakeBody:
         # Sets a new goal as the tail-piece it finds
-        grid[int(body.top / 20)][int(body.left / 20)] = 5
+        grid[int(body.top / blockSize)][int(body.left / blockSize)] = 5
         xy, parentMap = dfs(grid, start, 5)
 
         # If a path is found
@@ -341,7 +373,7 @@ def findTailPath(path):
             break
 
         # Resets the grid
-        grid[int(body.top / 20)][int(body.left / 20)] = 1
+        grid[int(body.top / blockSize)][int(body.left / blockSize)] = 1
 
     return path
 
@@ -349,9 +381,9 @@ def findTailPath(path):
 # Locates a path from the snake head to the apple
 def findApplePath(path, goal):
     if not path:
-        start = int(snakeHead.top / 20), int(snakeHead.left / 20)
+        start = int(snakeHead.top / blockSize), int(snakeHead.left / blockSize)
 
-        if apple.left / 20 in (1, 18):
+        if apple.left / (size - 2) in (1, size):
             xy, parentMap = bfs(grid, start, goal, 'ud')
         else:
             xy, parentMap = bfs(grid, start, goal)
@@ -392,8 +424,8 @@ def genApple(apple, grid):
             genApple(apple, grid)
     else:
         # Randomizes apple spawn
-        apple.left = randrange(0, 18) * 20 + 20
-        apple.top = randrange(0, 18) * 20 + 20
+        apple.left = randrange(0, size) * blockSize + blockSize
+        apple.top = randrange(0, size) * blockSize + blockSize
 
     # Regenerates apple if it is generated inside the snake head
     if snakeHead.hits(apple.centerX, apple.centerY):
@@ -462,6 +494,14 @@ def onKeyPress(key):
             isPaused = True
             print('Paused the game')
 
+    if key == 'G':
+        if gridBackground.visible:
+            print('Grid hidden')
+            gridBackground.visible = False
+        else:
+            print('Grid shown')
+            gridBackground.visible = True
+
     # Prints information
     if key == 'I':
         # Displays the current grid that the snake sees
@@ -517,8 +557,8 @@ def onStep():
         Rect(
             snakeHead.left,
             snakeHead.top,
-            20,
-            20,
+            blockSize,
+            blockSize,
             fill='green',
             border='black',
             borderWidth=1))
@@ -531,24 +571,31 @@ def onStep():
         # The game would run significantly slower if the grid were to be
         # updated every single step
         if not path:
-            for gridX in range(20):
-                if gridX != 0 and gridX != 19:              # Avoids updated the border
-                    for gridY in range(20):
-                        if gridY != 0 and gridY != 19:      # Avoids updated the border
-                            if apple.hits(20 * gridX + 10, 20 * gridY + 10):
+            for gridX in range(size + 2):
+                if gridX != 0 and gridX != (
+                        size + 2) - 1:              # Avoids updated the border
+                    for gridY in range(size + 2):
+                        if gridY != 0 and gridY != (
+                                size + 2) - 1:      # Avoids updated the border
+                            if apple.hits(
+                                    blockSize * gridX + blockSize / 2,
+                                    blockSize * gridY + blockSize / 2):
                                 grid[gridY][gridX] = 9
-                            elif border.hits(20 * gridX + 10, 20 * gridY + 10):
+                            elif border.hits(blockSize * gridX + blockSize / 2, blockSize * gridY + blockSize / 2):
                                 grid[gridY][gridX] = 1
                             else:
                                 grid[gridY][gridX] = 0
 
                             for body in snakeBody:
-                                if body.hits(20 * gridX + 10, 20 * gridY + 10):
+                                if body.hits(
+                                        blockSize * gridX + blockSize / 2,
+                                        blockSize * gridY + blockSize / 2):
                                     grid[gridY][gridX] = 1
                                     break
 
                             if snakeHead.hits(
-                                    20 * gridX + 10, 20 * gridY + 10):
+                                    blockSize * gridX + blockSize / 2,
+                                    blockSize * gridY + blockSize / 2):
                                 grid[gridY][gridX] = 3
 
         # Determines the snake's next path to follow
@@ -562,13 +609,13 @@ def onStep():
 
     # Moves the snake head
     if snakeHead.direction == 'right' and snakeHead.prevDirection != 'left':
-        snakeHead.centerX += 20
+        snakeHead.centerX += blockSize
     if snakeHead.direction == 'left' and snakeHead.prevDirection != 'right':
-        snakeHead.centerX -= 20
+        snakeHead.centerX -= blockSize
     if snakeHead.direction == 'up' and snakeHead.prevDirection != 'down':
-        snakeHead.centerY -= 20
+        snakeHead.centerY -= blockSize
     if snakeHead.direction == 'down' and snakeHead.prevDirection != 'up':
-        snakeHead.centerY += 20
+        snakeHead.centerY += blockSize
 
     snakeHead.prevDirection = snakeHead.direction
 
@@ -576,14 +623,15 @@ def onStep():
         # Adds another snake body
         snakeBody.append(Rect(snakeBody[-1].left,
                               snakeBody[-1].top,
-                              20,
-                              20,
+                              blockSize,
+                              blockSize,
                               fill='green',
                               border='black',
                               borderWidth=1))
         # Updates score, ends game if score is 324
         score.value = len(snakeBody)
-        if score.value == 324:
+
+        if score.value == pow(size, 2):
             gameOver()
 
         # Generates the next apple
