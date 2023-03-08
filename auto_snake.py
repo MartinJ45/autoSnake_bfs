@@ -1,4 +1,4 @@
-# Date: 03/07/2023 (last updated)
+# Date: 03/08/2023 (last updated)
 # Name: Martin Jimenez
 
 # This snake game uses the cmu_graphics library
@@ -113,8 +113,10 @@ apple = Rect(
     fill='red',
     border='black',
     borderWidth=1)
-apple.left = appleSeed[len(snakeBody) - 1][0]
-apple.top = appleSeed[len(snakeBody) - 1][1]
+
+if appleSeed and len(snakeBody) > 1:
+    apple.left = appleSeed[len(snakeBody)][0]
+    apple.top = appleSeed[len(snakeBody)][1]
 
 score.value = len(snakeBody)
 
@@ -154,7 +156,7 @@ def gameOver():
 
 # Uses depth first search to path find to the end of the tail in the most amount of moves as possible
 # Results in coiling itself
-def dfs(grid, start, goal):
+def dfs(grid, start, goal, order='lr'):
     visited = set()
     stack = [start]
     parentMap = {}
@@ -171,26 +173,50 @@ def dfs(grid, start, goal):
                     and (y < cols - 1) and (grid[x][y]) == goal):
                 return (x, y), parentMap
 
-            if (x > 0) and (grid[x - 1][y] not in (1, 2, 3)
-                            ) and ((x - 1, y) not in visited):
-                stack.append((x - 1, y))
-                parentMap[(x - 1, y)] = ((x, y), 'up')
-            if (x < rows -
-                1) and (grid[x +
-                             1][y] not in (1, 2, 3)) and ((x +
-                                                           1, y) not in visited):
-                stack.append((x + 1, y))
-                parentMap[(x + 1, y)] = ((x, y), 'down')
-            if (y > 0) and (grid[x][y - 1] not in (1, 2, 3)
-                            ) and ((x, y - 1) not in visited):
-                stack.append((x, y - 1))
-                parentMap[(x, y - 1)] = ((x, y), 'left')
-            if (y < cols -
-                1) and (grid[x][y +
-                                1] not in (1, 2, 3)) and ((x, y +
-                                                           1) not in visited):
-                stack.append((x, y + 1))
-                parentMap[(x, y + 1)] = ((x, y), 'right')
+            # Favors going left to right than up and down
+            if order == 'lr':
+                if (x > 0) and (grid[x - 1][y] not in (1, 2, 3)
+                                ) and ((x - 1, y) not in visited):
+                    stack.append((x - 1, y))
+                    parentMap[(x - 1, y)] = ((x, y), 'up')
+                if (x < rows -
+                    1) and (grid[x +
+                                 1][y] not in (1, 2, 3)) and ((x +
+                                                               1, y) not in visited):
+                    stack.append((x + 1, y))
+                    parentMap[(x + 1, y)] = ((x, y), 'down')
+                if (y > 0) and (grid[x][y - 1] not in (1, 2, 3)
+                                ) and ((x, y - 1) not in visited):
+                    stack.append((x, y - 1))
+                    parentMap[(x, y - 1)] = ((x, y), 'left')
+                if (y < cols -
+                    1) and (grid[x][y +
+                                    1] not in (1, 2, 3)) and ((x, y +
+                                                               1) not in visited):
+                    stack.append((x, y + 1))
+                    parentMap[(x, y + 1)] = ((x, y), 'right')
+            # Favors going up and down than left to right
+            elif order == 'ud':
+                if (y > 0) and (grid[x][y - 1] not in (1, 2, 3)
+                                ) and ((x, y - 1) not in visited):
+                    stack.append((x, y - 1))
+                    parentMap[(x, y - 1)] = ((x, y), 'left')
+                if (y < cols -
+                    1) and (grid[x][y +
+                                    1] not in (1, 2, 3)) and ((x, y +
+                                                               1) not in visited):
+                    stack.append((x, y + 1))
+                    parentMap[(x, y + 1)] = ((x, y), 'right')
+                if (x > 0) and (grid[x - 1][y] not in (1, 2, 3)
+                                ) and ((x - 1, y) not in visited):
+                    stack.append((x - 1, y))
+                    parentMap[(x - 1, y)] = ((x, y), 'up')
+                if (x < rows -
+                    1) and (grid[x +
+                                 1][y] not in (1, 2, 3)) and ((x +
+                                                               1, y) not in visited):
+                    stack.append((x + 1, y))
+                    parentMap[(x + 1, y)] = ((x, y), 'down')
 
     return None, None
 
@@ -355,6 +381,16 @@ def findTailPath(path):
 
             # If a successful path is found
             if len(path) >= snakeBody.index(body) + 1:
+                # Tries to find a longer path prioritizing up and down
+                xy, parentMap = dfs(grid, start, 5, 'ud')
+
+                if xy is not None:
+                    newPath = findPath(xy, start, parentMap)
+
+                    if len(newPath) > len(path):
+                        path = newPath
+                        path.reverse()
+
                 # Uncomment to see which option is chosen
                 # print('Option', snakeBody.index(body), 'taken with', len(path), 'directions')
                 break
@@ -383,10 +419,7 @@ def findApplePath(path, goal):
     if not path:
         start = int(snakeHead.top / blockSize), int(snakeHead.left / blockSize)
 
-        if apple.left / (size - 2) in (1, size):
-            xy, parentMap = bfs(grid, start, goal, 'ud')
-        else:
-            xy, parentMap = bfs(grid, start, goal)
+        xy, parentMap = bfs(grid, start, goal)
 
         # If a path to the apple is found
         if xy is not None:
@@ -397,10 +430,18 @@ def findApplePath(path, goal):
             # path
             isStuck = futurePath(path)
 
-            # If the snake determines it will get stuck, the snake finds a path
-            # to its tail
+            # If the snake determines it will get stuck it path finds to the apple again, but this time prioritizing up and down
             if isStuck:
-                path = findTailPath(path)
+                xy, parentMap = bfs(grid, start, goal, 'ud')
+
+                if xy is not None:
+                    path = findPath(xy, start, parentMap)
+                    path.reverse()
+                    isStuck = futurePath(path)
+
+                    # If the snake will still get stuck it path finds to the end of its tail
+                    if isStuck:
+                        path = findTailPath(path)
         # If a path to the apple is not found, the snake finds a path to its
         # tail
         else:
@@ -412,6 +453,7 @@ def findApplePath(path, goal):
 # Generates the apple
 def genApple(apple, grid):
     global appleSeed
+    global newAppleSeed
 
     if appleSeed:
         # Follows a set seed
@@ -427,10 +469,16 @@ def genApple(apple, grid):
         apple.left = randrange(0, size) * blockSize + blockSize
         apple.top = randrange(0, size) * blockSize + blockSize
 
+    # Updates the apple seed
+    newApple = (apple.left, apple.top)
+    newAppleSeed.append(newApple)
+
     # Regenerates apple if it is generated inside the snake head
     if snakeHead.hits(apple.centerX, apple.centerY):
         if appleSeed:
             appleSeed.pop(len(snakeBody) - 1)
+
+        newAppleSeed.pop(-1)
         genApple(apple, grid)
 
     # Regenerates apple if it is generated inside the snake body
@@ -438,11 +486,9 @@ def genApple(apple, grid):
         if body.hits(apple.centerX, apple.centerY):
             if appleSeed:
                 appleSeed.pop(len(snakeBody) - 1)
-            genApple(apple, grid)
 
-    # Updates the apple seed
-    newApple = (apple.left, apple.top)
-    newAppleSeed.append(newApple)
+            newAppleSeed.pop(-1)
+            genApple(apple, grid)
 
 
 def onKeyPress(key):
