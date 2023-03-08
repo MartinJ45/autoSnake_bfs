@@ -1,5 +1,4 @@
 ## About the project
-<hr>
 
 My first dive into artificial intelligence starts simple with a path-finding snake 
 game. I utilize breath first search to locate the quickest path from the snake to 
@@ -18,7 +17,6 @@ pip install -r requirements.txt
 
 
 ## How to play
-<hr>
 
 ### Controls
 
