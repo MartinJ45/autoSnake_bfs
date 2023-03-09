@@ -346,7 +346,7 @@ def futurePath(path):
         # Finds a path from the apple to the end of the tail
         # If no path is found, the snake will get stuck if it follows the apple
         # If a path is found, the snake is safe to get the apple
-        fStart = int(apple.top / blockSize), int(apple.left / blockSize)
+        fStart = int(pythonRound(apple.top / blockSize, 0)), int(pythonRound(apple.left / blockSize, 0))
         goal = 5
         xy, parentMap = dfs(newGrid, fStart, goal)
 
@@ -550,17 +550,12 @@ def onKeyPress(key):
 
     # Prints information
     if key == 'I':
-        # Displays the current grid that the snake sees
-        print('Current grid:')
-        for g in grid:
-            print(g)
-
         # Prints the seed of the game, so the game can be replicated
         print('Copy and paste this code to save/replicate where the snake left off')
         print('appleSeed =', newAppleSeed)
         # Prints the snake's head
         print(
-            f'snakeHead = Rect({snakeHead.left}, {snakeHead.top}, 20, 20, fill=\'blue\', border=\'black\', borderWidth=1)')
+            f'snakeHead = Rect({snakeHead.left}, {snakeHead.top}, {blockSize}, {blockSize}, fill=\'blue\', border=\'black\', borderWidth=1)')
         # Prints the snake's body
         print('snakeBody = [', end='')
         for body in snakeBody:
@@ -569,7 +564,7 @@ def onKeyPress(key):
             else:
                 end = ','
             print(
-                f'Rect({body.left}, {body.top}, 20, 20, fill=\'green\', border=\'black\', borderWidth=1)',
+                f'Rect({body.left}, {body.top}, {blockSize}, {blockSize}, fill=\'green\', border=\'black\', borderWidth=1)',
                 end=end)
 
     # Ends the game
@@ -667,7 +662,7 @@ def onStep():
 
     if apple.hits(snakeHead.centerX, snakeHead.centerY):
         # Adds another snake body
-        snakeBody.append(Rect(snakeBody[-1].left,
+        snakeBody.insert(0, Rect(snakeBody[-1].left,
                               snakeBody[-1].top,
                               blockSize,
                               blockSize,
@@ -679,6 +674,7 @@ def onStep():
 
         if score.value == pow(size, 2):
             gameOver()
+            return
 
         # Generates the next apple
         genApple(apple, grid)
