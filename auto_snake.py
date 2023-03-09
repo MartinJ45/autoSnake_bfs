@@ -130,7 +130,7 @@ snakeHead.prevDirection = 'right'
 # Stops the program when the snake loses, wins, or if the game is ended early
 def gameOver():
     # The max value it can achieve is 324 in an 18 by 18 grid
-    if score.value == pow(size, 2):
+    if score.value == pow(size, 2) - 1:
         Label('YOU WIN', 200, 200, size=50, fill='lime')
     else:
         Label('GAME OVER', 200, 200, size=50, fill='red')
@@ -330,7 +330,7 @@ def futurePath(path):
 
         # Changes the end of the snake to empty spaces, so it is up to date
         for body in snakeBody:
-            if snakeBody.index(body) < len(path) - 1:
+            if snakeBody.index(body) < len(path) - 2:
                 newGrid[int(body.top / blockSize)
                         ][int(body.left / blockSize)] = 0
             else:
@@ -386,10 +386,13 @@ def findTailPath(path):
 
                 if xy is not None:
                     newPath = findPath(xy, start, parentMap)
+                    newPath.reverse()
+
+                    if newPath:
+                        newPath.pop(-1)
 
                     if len(newPath) > len(path):
                         path = newPath
-                        path.reverse()
 
                 # Uncomment to see which option is chosen
                 # print('Option', snakeBody.index(body), 'taken with', len(path), 'directions')
@@ -550,6 +553,12 @@ def onKeyPress(key):
 
     # Prints information
     if key == 'I':
+        # Prints the current grid
+        print('Current grid')
+        for g in grid:
+            print(g)
+        print('\n')
+
         # Prints the seed of the game, so the game can be replicated
         print('Copy and paste this code to save/replicate where the snake left off')
         print('appleSeed =', newAppleSeed)
@@ -672,7 +681,7 @@ def onStep():
         # Updates score, ends game if score is 324
         score.value = len(snakeBody)
 
-        if score.value == pow(size, 2):
+        if score.value == pow(size, 2) - 1:
             gameOver()
             return
 
