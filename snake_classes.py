@@ -62,19 +62,27 @@ class Snake:
 
 
 class Apple:
-    def __init__(self, left, top, size):
+    def __init__(self, left, top, size, grid_size):
         self.left = left
         self.top = top
         self.size = size
+        self.grid_size = grid_size
+        self.seed = []
 
         self.apple = Rect(self.left, self.top, self.size, self.size, fill='red', border='black', borderWidth=1)
 
     def get_apple(self):
         return self.apple
 
+    def set_apple(self, apple_pos):
+        self.left = apple_pos[0]
+        self.top = apple_pos[1]
+        self.apple.left = self.left
+        self.apple.top = self.top
+
     def gen_apple(self, snake_head, snake_body):
-        self.left = randrange(1, self.size-1) * self.size
-        self.top = randrange(1, self.size-1) * self.size
+        self.left = randrange(1, self.grid_size-1) * self.size
+        self.top = randrange(1, self.grid_size-1) * self.size
         self.apple.left = self.left
         self.apple.top = self.top
 
@@ -84,3 +92,9 @@ class Apple:
 
         if snake_head.hits(self.apple.centerX, self.apple.centerY):
             self.gen_apple(snake_head, snake_body)
+
+    def get_seed(self):
+        return self.seed
+
+    def update_seed(self, apple_pos):
+        self.seed.append(apple_pos)
