@@ -520,7 +520,7 @@ def onStep():
         if not path:
             grid = genGrid()
 
-        path = findApplePath(path, 9)
+            path = findApplePath(path, 9)
 
         try:
             snek.set_direction(path[0])
