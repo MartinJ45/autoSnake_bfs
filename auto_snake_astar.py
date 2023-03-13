@@ -1,5 +1,5 @@
 # Name: Martin Jimenez
-# Date: 03/10/2023 (last updated)
+# Date: 03/13/2023 (last updated)
 
 from cmu_graphics import *
 import heapq
@@ -110,8 +110,10 @@ score = Label(0, 50, blockSize / 2, fill='white', size=blockSize)
 
 path = []
 
-appleSeed = [(40, 320), (260, 140), (40, 140), (200, 240), (60, 60), (80, 240), (320, 220), (60, 80), (300, 300), (320, 260), (20, 140), (200, 60), (320, 180), (20, 200), (320, 120), (80, 240), (180, 260), (260, 60), (220, 20), (100, 320), (300, 260), (100, 60), (100, 120), (260, 280), (60, 300), (140, 60), (200, 260), (20, 180), (320, 60), (260, 300), (20, 140), (20, 200), (40, 320), (240, 40), (140, 200), (20, 60), (180, 100), (40, 280), (120, 120), (160, 20), (300, 180), (200, 280), (200, 140), (40, 60), (260, 280), (140, 260), (300, 320), (300, 100), (260, 240), (160, 200), (300, 60), (160, 240), (300, 240), (80, 320), (300, 200), (60, 140), (220, 160), (100, 180), (200, 40), (80, 20), (260, 20), (80, 120)]
-
+# appleSeed = [(160, 160), (240, 100), (220, 260), (260, 240), (120, 80), (320, 120), (160, 200), (180, 120), (200, 160), (80, 220), (160, 20), (20, 20), (140, 180), (60, 120), (220, 300), (180, 300), (60, 20), (20, 40), (100, 160), (180, 220), (220, 160), (40, 240), (200, 100), (60, 320), (240, 180), (140, 60), (140, 160), (280, 280), (20, 140), (200, 320), (300, 60), (200, 20), (180, 260), (320, 120), (100, 240), (300, 100), (80, 280), (140, 120), (320, 320), (140, 60), (280, 240), (180, 200), (320, 260), (260, 60), (80, 260), (60, 220), (200, 160), (200, 40), (200, 280), (80, 100), (300, 280), (80, 240), (260, 120)]
+# appleSeed = [(120, 180), (140, 280), (260, 140), (120, 240), (260, 280), (280, 160), (120, 280), (60, 60), (20, 240), (320, 220), (120, 100), (300, 300), (40, 80), (60, 260), (320, 140), (120, 120), (220, 160), (240, 100), (280, 320), (180, 180), (60, 260), (320, 220), (60, 80), (240, 180), (200, 180), (100, 240), (200, 240), (260, 180), (280, 100), (240, 80), (160, 60), (160, 140), (100, 40), (100, 100), (180, 180), (300, 40), (20, 20), (80, 40), (200, 320), (180, 140), (280, 100), (260, 60), (300, 300), (320, 60), (240, 280), (280, 200), (200, 320), (220, 20), (200, 220), (240, 100), (140, 220), (80, 140), (120, 260), (300, 40), (140, 320), (200, 220), (200, 80), (160, 40), (180, 20), (120, 200)]
+# appleSeed = [(320, 20), (220, 180), (200, 220), (160, 320), (140, 20), (300, 100), (20, 180), (120, 200), (240, 320), (40, 280), (160, 40), (100, 320), (20, 100), (200, 160), (240, 320), (140, 260), (140, 140), (300, 220), (40, 120), (140, 180), (240, 280), (100, 280), (100, 220), (160, 40), (280, 120), (300, 40), (20, 200), (200, 260), (120, 120), (60, 140), (240, 40), (220, 100), (300, 100), (300, 160), (120, 200), (60, 60), (80, 20), (300, 200), (120, 300), (40, 20), (220, 140), (80, 140), (120, 280), (300, 180), (320, 120), (320, 220), (260, 80), (180, 180), (300, 300), (300, 20), (260, 120), (280, 140), (160, 140), (80, 200)]
+appleSeed = []
 snek = Snake(blockSize, blockSize, blockSize)
 apple = Apple(200, blockSize, blockSize, size)
 
@@ -156,6 +158,7 @@ def futurePath(path):
                 break
 
         # Uncomment to see the new grid
+        print("Grid for future path")
         for g in newGrid:
            print(g)
         print('\n')
@@ -164,9 +167,9 @@ def futurePath(path):
         # If no path is found, the snake will get stuck if it follows the apple
         # If a path is found, the snake is safe to get the apple
         fStart = int(pythonRound(apple.apple.top / blockSize, 0)), int(pythonRound(apple.apple.left / blockSize, 0))
-        fPath = astar(newGrid, fStart, fEnd)
-        print(fStart, fEnd)
-        print(fPath)
+        fPath = astar(newGrid, fStart, fEnd, "future path")
+        #print(fStart, fEnd)
+        print("Future path", fPath)
 
         if fPath is not None:
             # Returns false if the snake will not get stuck
@@ -186,8 +189,7 @@ def return_path(current_node):
     path.pop(-1)
     return path[::-1]  # Return reversed path
 
-
-def astar(grid, start, end):
+def astar(grid, start, end, msg=None):
     """
     Returns a list of tuples as a path from the given start to the given end in the given maze
     :param grid:
@@ -216,7 +218,7 @@ def astar(grid, start, end):
 
     # Adding a stop condition
     outer_iterations = 0
-    max_iterations = (len(grid[0]) * len(grid))
+    max_iterations = len(grid[0]) * len(grid)
 
     # what squares do we search
     adjacent_squares = ((0, -1), (0, 1), (-1, 0), (1, 0),)
@@ -230,6 +232,8 @@ def astar(grid, start, end):
             # it will not contain the destination
             #print('Could not find apple')
 
+            print("MAX")
+            print("Value grid for", msg)
             for value in valueGrid:
                 for v in value:
                     print(v, end=(4-len(str(v)))*' ')
@@ -246,6 +250,7 @@ def astar(grid, start, end):
         if current_node == end_node:
             #print('Found apple')
 
+            print("Value grid for", msg)
             for value in valueGrid:
                 for v in value:
                     print(v, end=(4-len(str(v)))*' ')
@@ -299,7 +304,6 @@ def astar(grid, start, end):
             heapq.heappush(open_list, child)
 
     return None
-
 
 # Updates the grid
 def genGrid():
@@ -424,21 +428,28 @@ def onStep():
         # Updates the grid whenever the snake doesn't have a path to follow
         # The game would run significantly slower if the grid were to be
         # updated every single step
-        start = (int(snek.snake_head.top / (size + 2)), int(snek.snake_head.left / (size + 2)))
+        start = (int(snek.snake_head.top / blockSize), int(snek.snake_head.left / blockSize))
 
         if not path:
             grid = genGrid()
-            end = (int(apple.apple.top/(size+2)), int(apple.apple.left/(size+2)))
-            path = astar(grid, start, end)
-            print(path)
+            print("Grid for current path")
+            for g in grid:
+                print(g)
+            print('\n')
 
+            end = (int(apple.apple.top/blockSize), int(apple.apple.left/blockSize))
+            path = astar(grid, start, end, "current path")
+            print("Current path", path)
+
+            # Calculates if the snake will get stuck
             if path and path[-1] == end:
                 isStuck = futurePath(path)
-                if isStuck:
+                if isStuck:         # Nothing is in place yet if the snake does get stuck :(
                     print('STUCK')
                     isPaused = True
 
         try:
+            # Calculates which direction the snake will move based on the path
             changeX = path[0][1] - start[1]
             changeY = path[0][0] - start[0]
 
