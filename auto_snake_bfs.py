@@ -162,7 +162,7 @@ def dfs(grid, start, goal, order='lr'):
     return None, None
 
 
-# Uses breath first search to path find to the apple in the least amount
+# Uses breadth-first search to path find to the apple in the least amount
 # of moves as possible
 def bfs(grid, start, goal, order='lr'):
     visited = set()
