@@ -8,8 +8,8 @@ from snake_classes import Apple
 
 # The default game speed is 10; this value can be changed by pressing the
 # left and right arrow keys
-app.stepsPerSecond = 200
-isPaused = True
+app.stepsPerSecond = 10
+isPaused = False
 isPlaying = False
 
 # Grabs size input
