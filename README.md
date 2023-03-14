@@ -1,7 +1,7 @@
 ## About the project
 
 My first dive into artificial intelligence starts simple with a path-finding snake 
-game. I utilize breath first search to locate the quickest path from the snake to 
+game. I utilize breadth-first search to locate the quickest path from the snake to 
 the apple, and depth first search to coil the snake and locate the end of its tail. 
 
 ### Built with
