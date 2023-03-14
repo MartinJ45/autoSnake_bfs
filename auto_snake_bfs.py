@@ -8,8 +8,8 @@ from snake_classes import Apple
 
 # The default game speed is 10; this value can be changed by pressing the
 # left and right arrow keys
-app.stepsPerSecond = 10
-isPaused = False
+app.stepsPerSecond = 200
+isPaused = True
 isPlaying = False
 
 # Grabs size input
@@ -93,6 +93,10 @@ def gameOver():
         Label('YOU WIN', 200, 200, size=50, fill='lime')
     else:
         Label('GAME OVER', 200, 200, size=50, fill='red')
+
+    print("appleSeed =", apple.get_seed())
+
+    app.stop()
 
 
 # Uses depth first search to path find to the end of the tail in the most amount of moves as possible
