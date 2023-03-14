@@ -287,7 +287,8 @@ def futurePath(path):
         # Finds a path from the apple to the end of the tail
         # If no path is found, the snake will get stuck if it follows the apple
         # If a path is found, the snake is safe to get the apple
-        fStart = int(pythonRound(apple.apple.top / blockSize, 0)), int(pythonRound(apple.apple.left / blockSize, 0))
+        fStart = int(pythonRound(apple.apple.top / blockSize, 0)
+                     ), int(pythonRound(apple.apple.left / blockSize, 0))
         goal = 5
         xy, parentMap = dfs(newGrid, fStart, goal)
 
@@ -301,7 +302,9 @@ def futurePath(path):
 
 # Locates a path from the snake head to the furthest end of the snake tail
 def findTailPath(path):
-    start = int(snek.snake_head.top / blockSize), int(snek.snake_head.left / blockSize)
+    start = int(snek.snake_head.top /
+                blockSize), int(snek.snake_head.left /
+                                blockSize)
 
     # Saves the longest path for a worst-case scenario
     highPath = []
@@ -361,7 +364,9 @@ def findTailPath(path):
 # Locates a path from the snake head to the apple
 def findApplePath(path, goal):
     if not path:
-        start = int(snek.snake_head.top / blockSize), int(snek.snake_head.left / blockSize)
+        start = int(snek.snake_head.top /
+                    blockSize), int(snek.snake_head.left /
+                                    blockSize)
 
         xy, parentMap = bfs(grid, start, goal)
 
@@ -374,7 +379,8 @@ def findApplePath(path, goal):
             # path
             isStuck = futurePath(path)
 
-            # If the snake determines it will get stuck it path finds to the apple again, but this time prioritizing up and down
+            # If the snake determines it will get stuck it path finds to the
+            # apple again, but this time prioritizing up and down
             if isStuck:
                 xy, parentMap = bfs(grid, start, goal, 'ud')
 
@@ -383,7 +389,8 @@ def findApplePath(path, goal):
                     path.reverse()
                     isStuck = futurePath(path)
 
-                    # If the snake will still get stuck it path finds to the end of its tail
+                    # If the snake will still get stuck it path finds to the
+                    # end of its tail
                     if isStuck:
                         path = findTailPath(path)
         # If a path to the apple is not found, the snake finds a path to its
@@ -396,32 +403,22 @@ def findApplePath(path, goal):
 
 # Updates the grid
 def genGrid():
-    for gridX in range(size + 2):
-        if gridX != 0 and gridX != (
-                size + 2) - 1:  # Avoids updated the border
-            for gridY in range(size + 2):
-                if gridY != 0 and gridY != (
-                        size + 2) - 1:  # Avoids updated the border
-                    if apple.apple.hits(
-                            blockSize * gridX + blockSize / 2,
-                            blockSize * gridY + blockSize / 2):
-                        grid[gridY][gridX] = 9
-                    elif border.hits(blockSize * gridX + blockSize / 2, blockSize * gridY + blockSize / 2):
-                        grid[gridY][gridX] = 1
-                    else:
-                        grid[gridY][gridX] = 0
+    grid = [
+        [1] * (size + 2)
+    ]
 
-                    for body in snek.snake_body:
-                        if body.hits(
-                                blockSize * gridX + blockSize / 2,
-                                blockSize * gridY + blockSize / 2):
-                            grid[gridY][gridX] = 1
-                            break
+    for i in range(size):
+        grid.append([1] + [0] * size + [1])
+    grid.append([1] * (size + 2))
 
-                    if snek.snake_head.hits(
-                            blockSize * gridX + blockSize / 2,
-                            blockSize * gridY + blockSize / 2):
-                        grid[gridY][gridX] = 3
+    for body in snek.snake_body:
+        grid[int(body.top / blockSize)][int(body.left / blockSize)] = 1
+
+    grid[int(snek.snake_head.top / blockSize)
+         ][int(snek.snake_head.left / blockSize)] = 3
+
+    grid[int(apple.apple.top / blockSize)
+         ][int(apple.apple.left / blockSize)] = 9
 
     return grid
 
