@@ -12,7 +12,7 @@ app.stepsPerSecond = 10
 isPaused = False
 isPlaying = False
 reset = False
-autoReset = False-
+autoReset = False
 
 # Grabs size input
 msg = 'Enter the board length (default 18 or press ENTER)'
