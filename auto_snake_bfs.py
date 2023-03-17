@@ -11,6 +11,8 @@ from snake_classes import Apple
 app.stepsPerSecond = 10
 isPaused = False
 isPlaying = False
+reset = False
+autoReset = False
 
 # Grabs size input
 msg = 'Enter the board length (default 18 or press ENTER)'
@@ -82,21 +84,47 @@ score = Label(0, 50, blockSize / 2, fill='white', size=blockSize)
 path = []
 
 appleSeed = []
-snek = Snake(blockSize, blockSize, blockSize)
+snek = Snake(blockSize, blockSize, blockSize, size)
 apple = Apple(200, blockSize, blockSize, size)
 
+gameOverMessage = Label('GAME OVER', 200, 200, size=50, fill='red', visible=False)
 
 # Stops the program when the snake loses, wins, or if the game is ended early
 def gameOver():
-    # The max value it can achieve is 324 in an 18 by 18 grid
-    if score.value == pow(size, 2) - 1:
-        Label('YOU WIN', 200, 200, size=50, fill='lime')
-    else:
-        Label('GAME OVER', 200, 200, size=50, fill='red')
+    if autoReset:
+        print("appleSeed =", apple.get_seed())
+        resetGame()
+        return
 
-    print("appleSeed =", apple.get_seed())
+    if not gameOverMessage.visible:
+        # The max value it can achieve is 324 in an 18 by 18 grid
+        if score.value == pow(size, 2) - 1:
+            gameOverMessage.value = 'YOU WIN!'
+            gameOverMessage.fill = 'lime'
+        else:
+            gameOverMessage.value = 'GAME OVER'
+            gameOverMessage.fill = 'red'
 
-    app.stop()
+        gameOverMessage.visible = True
+        gameOverMessage.toFront()
+
+        print("appleSeed =", apple.get_seed())
+
+
+def resetGame():
+    global appleSeed
+
+    print('RESET')
+    print('Snake got', score.value)
+
+    appleSeed = []
+
+    snek.reset(blockSize, blockSize)
+    apple.reset(200, blockSize)
+
+    score.value = 0
+
+    gameOverMessage.visible = False
 
 
 # Uses depth first search to path find to the end of the tail in the most amount of moves as possible
@@ -306,9 +334,9 @@ def futurePath(path):
 
 # Locates a path from the snake head to the furthest end of the snake tail
 def findTailPath(path):
-    start = int(snek.snake_head.top /
-                blockSize), int(snek.snake_head.left /
-                                blockSize)
+    start = int(pythonRound(snek.snake_head.top /
+                            blockSize, 0)), int(pythonRound(snek.snake_head.left /
+                                                            blockSize, 0))
 
     # Saves the longest path for a worst-case scenario
     highPath = []
@@ -368,9 +396,9 @@ def findTailPath(path):
 # Locates a path from the snake head to the apple
 def findApplePath(path, goal):
     if not path:
-        start = int(snek.snake_head.top /
-                    blockSize), int(snek.snake_head.left /
-                                    blockSize)
+        start = int(pythonRound(snek.snake_head.top /
+                    blockSize, 0)), int(pythonRound(snek.snake_head.left /
+                                    blockSize, 0))
 
         xy, parentMap = bfs(grid, start, goal)
 
@@ -430,6 +458,19 @@ def genGrid():
 def onKeyPress(key):
     global isPaused
     global isPlaying
+    global reset
+    global autoReset
+
+    if key == 'R':
+        reset = True
+
+    if key == 'A':
+        if autoReset:
+            autoReset = False
+            print('Auto reset off')
+        else:
+            autoReset = True
+            print('Auto reset on')
 
     # Allows the player to play
     if key == 'P':
@@ -505,6 +546,12 @@ def onStep():
     global isPlaying
     global isPaused
     global grid
+    global reset
+
+    if reset:
+        resetGame()
+        reset = False
+        return
 
     if isPaused:
         return

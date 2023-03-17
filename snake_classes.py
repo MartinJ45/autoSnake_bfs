@@ -3,12 +3,12 @@ from random import *
 
 
 class Snake:
-    def __init__(self, left, top, size):
+    def __init__(self, left, top, size, grid_size):
         self.left = left
         self.top = top
         self.size = size
+        self.grid_size = grid_size
 
-        self.length = 0
         self.direction = 'right'
 
         self.snake_head = Rect(self.left, self.top, self.size, self.size, fill='blue', border='black', borderWidth=1)
@@ -48,7 +48,7 @@ class Snake:
             self.snake_body.insert(0, Rect(self.snake_body[0].left, self.snake_body[0].top, self.size, self.size, fill='green', border='black', borderWidth=1))
 
     def is_dead(self):
-        if int(self.left/self.size) in (0, self.size-1) or int(self.top/self.size) in (0, self.size-1):
+        if int(self.left/self.size) in (0, self.grid_size+1) or int(self.top/self.size) in (0, self.grid_size+1):
             return True
 
         if len(self.snake_body) <= 1:
@@ -59,6 +59,20 @@ class Snake:
                 return True
 
         return False
+
+    def reset(self, left, top):
+        for body in self.snake_body:
+            body.visible = False
+
+        self.snake_body.clear()
+
+        self.left = left
+        self.top = top
+
+        self.direction = 'right'
+
+        self.snake_head.left = self.left
+        self.snake_head.top = self.top
 
 
 class Apple:
@@ -81,8 +95,8 @@ class Apple:
         self.apple.top = self.top
 
     def gen_apple(self, snake_head, snake_body):
-        self.left = randrange(1, self.grid_size-1) * self.size
-        self.top = randrange(1, self.grid_size-1) * self.size
+        self.left = randrange(1, self.grid_size+1) * self.size
+        self.top = randrange(1, self.grid_size+1) * self.size
         self.apple.left = self.left
         self.apple.top = self.top
 
@@ -98,3 +112,11 @@ class Apple:
 
     def update_seed(self, apple_pos):
         self.seed.append(apple_pos)
+
+    def reset(self, left, top):
+        self.left = left
+        self.top = top
+        self.seed.clear()
+
+        self.apple.left = self.left
+        self.apple.top = self.top
