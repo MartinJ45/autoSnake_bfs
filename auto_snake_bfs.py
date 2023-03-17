@@ -5,6 +5,7 @@ from cmu_graphics import *
 from collections import deque
 from snake_classes import Snake
 from snake_classes import Apple
+import numpy as np
 
 # The default game speed is 10; this value can be changed by pressing the
 # left and right arrow keys
@@ -504,15 +505,15 @@ def onKeyPress(key):
     # Slows down the game
     if key == 'left':
         if app.stepsPerSecond == 1:
-            print('Cannot lower speed past', app.stepsPerSecond)
+            print(f'Cannot lower speed past {app.stepsPerSecond / 10}x')
         else:
             app.stepsPerSecond -= 1
-            print('Lowered speed', app.stepsPerSecond)
+            print(f'Lowered speed {app.stepsPerSecond / 10}x')
 
     # Speeds up the game
     if key == 'right':
         app.stepsPerSecond += 1
-        print('Increased speed', app.stepsPerSecond)
+        print(f'Increased speed {app.stepsPerSecond / 10}x')
 
     # Pauses the game
     if key == 'space':
