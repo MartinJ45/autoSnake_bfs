@@ -113,14 +113,19 @@ def gameOver():
 
 def resetGame():
     global appleSeed
+    global snek
+    global apple
 
     print('RESET')
     print('Snake got', score.value)
 
     appleSeed = []
 
-    snek.reset(blockSize, blockSize)
-    apple.reset(200, blockSize)
+    snek.reset()
+    apple.reset()
+
+    snek = Snake(blockSize, blockSize, blockSize, size)
+    apple = Apple(200, blockSize, blockSize, size)
 
     score.value = 0
 

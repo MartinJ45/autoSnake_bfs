@@ -60,19 +60,13 @@ class Snake:
 
         return False
 
-    def reset(self, left, top):
+    def reset(self):
         for body in self.snake_body:
             body.visible = False
 
         self.snake_body.clear()
 
-        self.left = left
-        self.top = top
-
-        self.direction = 'right'
-
-        self.snake_head.left = self.left
-        self.snake_head.top = self.top
+        self.snake_head.visible = False
 
 
 class Apple:
@@ -113,10 +107,5 @@ class Apple:
     def update_seed(self, apple_pos):
         self.seed.append(apple_pos)
 
-    def reset(self, left, top):
-        self.left = left
-        self.top = top
-        self.seed.clear()
-
-        self.apple.left = self.left
-        self.apple.top = self.top
+    def reset(self):
+        self.apple.visible = False
