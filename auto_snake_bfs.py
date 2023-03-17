@@ -5,7 +5,6 @@ from cmu_graphics import *
 from collections import deque
 from snake_classes import Snake
 from snake_classes import Apple
-import numpy as np
 
 # The default game speed is 10; this value can be changed by pressing the
 # left and right arrow keys
