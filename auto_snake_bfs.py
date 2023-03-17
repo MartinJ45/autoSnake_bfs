@@ -361,7 +361,7 @@ def findTailPath(path):
                 path.pop(-1)
 
             # If a successful path is found
-            if len(path) >= snek.snake_body.index(body) + 1:
+            if len(path) >= snek.snake_body.index(body):
                 # Tries to find a longer path prioritizing up and down
                 xy, parentMap = dfs(grid, start, 5, 'ud')
 
@@ -376,12 +376,12 @@ def findTailPath(path):
                         path = newPath
 
                 # Uncomment to see which option is chosen
-                # print('Option', snakeBody.index(body), 'taken with', len(path), 'directions')
+                #print('Option', snek.snake_body.index(body), 'taken with', len(path), 'directions')
                 break
             # If the path found will end up losing the game
             else:
                 # Uncomment to see which option got rejected
-                # print('Rejected option', snakeBody.index(body), 'with', len(path), 'directions')
+                #print('Rejected option', snek.snake_body.index(body), 'with', len(path), 'directions')
                 if len(path) > len(highPath):
                     highPath = path
 
@@ -389,7 +389,7 @@ def findTailPath(path):
         if snek.snake_body.index(body) == len(snek.snake_body) - 1:
             path = highPath
             # Uncomment to see the longest path
-            # print('Best option chosen with', len(path), 'directions')
+            #print('Best option chosen with', len(path), 'directions')
             break
 
         # Resets the grid
