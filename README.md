@@ -11,7 +11,7 @@ I use Carnegie Mellon's `cmu_graphics` library to draw my objects.
 ### Installation
 
 ```
-git clone https://github.com/MartinJ45/autoSnake.git 
+git clone https://github.com/MartinJ45/autoSnake_bfs.git 
 pip install -r requirements.txt
 ```
 
